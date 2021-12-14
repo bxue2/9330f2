@@ -1,7 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import BigInteger, DateTime, Integer
+from sqlalchemy.sql.sqltypes import BigInteger, Boolean, DateTime, Integer
 
 from api.database import Base
 
@@ -15,3 +15,4 @@ class CsvMetadata(Base):
     total_rows = Column(Integer, nullable=False)
     success = Column(Integer, nullable=False)
     failed = Column(Integer, nullable=False)
+    completed = Column(Boolean, nullable=False)

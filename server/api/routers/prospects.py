@@ -33,11 +33,12 @@ def upload_prospects_csv(
     page_size: int = DEFAULT_PAGE_SIZE,
     db: Session = Depends(get_db),
 ):
-    """Get a single page of prospects"""
+    """Verify User"""
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
+
     prospects = ProspectCrud.get_users_prospects(db, current_user.id, page, page_size)
     total = ProspectCrud.get_user_prospects_total(db, current_user.id)
     return {"prospects": prospects, "size": len(prospects), "total": total}
@@ -50,7 +51,7 @@ def import_csv(
     page_size: int = DEFAULT_PAGE_SIZE,
     db: Session = Depends(get_db),
 ):
-    """Get a single page of prospects"""
+    """Verify User"""
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
@@ -67,11 +68,12 @@ def get_upload_status(
     page_size: int = DEFAULT_PAGE_SIZE,
     db: Session = Depends(get_db),
 ):
-    """Get a single page of prospects"""
+    """Verify User"""
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
+
     prospects = ProspectCrud.get_users_prospects(db, current_user.id, page, page_size)
     total = ProspectCrud.get_user_prospects_total(db, current_user.id)
     return {"prospects": prospects, "size": len(prospects), "total": total}

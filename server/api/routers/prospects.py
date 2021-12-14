@@ -39,9 +39,11 @@ def upload_prospects_csv(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
 
-    prospects = ProspectCrud.get_users_prospects(db, current_user.id, page, page_size)
-    total = ProspectCrud.get_user_prospects_total(db, current_user.id)
-    return {"prospects": prospects, "size": len(prospects), "total": total}
+    #Step 1: Store CSV file somehow? Maybe add new db table containing each row of csv
+
+
+    #Step 2: Need to return sample data for column matching later if successful upload
+    return {"row1": "row1", "row2": "row2"}
 
 #2
 @router.post("/prospects/import", response_model=schemas.ProspectResponse)

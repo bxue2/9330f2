@@ -85,4 +85,4 @@ def get_upload_status(
 
     # Check csv_metadata table to get completed status/progress, then return info
 
-    return {"completed": True, "total": 1, "success": 1, "fail": 1}
+    return {"completed": True, "total": 1, "processed": 1}

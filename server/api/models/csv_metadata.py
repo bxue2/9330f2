@@ -12,4 +12,6 @@ class CsvMetadata(Base):
     __tablename__ = "csv_metadata"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    progress = Column(Integer)
+    total_rows = Column(Integer, nullable=False)
+    success = Column(Integer, nullable=False)
+    failed = Column(Integer, nullable=False)

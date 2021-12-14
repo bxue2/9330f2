@@ -39,7 +39,9 @@ def upload_prospects_csv(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
 
-    #Step 1: Store CSV file somehow? Maybe add new db table containing each row of csv
+    #Step 1: Store CSV file somehow?
+    # Maybe add new db table containing each row of csv
+    # Going to use current DB, but might make sense to use a different storage method
 
 
     #Step 2: Need to return sample data for column matching later if successful upload
@@ -58,9 +60,14 @@ def import_csv(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
+    # Step 1: Parse request to get column names
     prospects = ProspectCrud.get_users_prospects(db, current_user.id, page, page_size)
     total = ProspectCrud.get_user_prospects_total(db, current_user.id)
-    return {"prospects": prospects, "size": len(prospects), "total": total}
+
+    #Step 2: Start uploading, want this to happen async though
+
+    # Step 3: Return id number of csv in table so we know what to track?
+    return {"csvid": 1}
 
 #3
 @router.get("/prospects/progress/:id", response_model=schemas.ProspectResponse)

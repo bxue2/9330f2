@@ -6,7 +6,7 @@ from sqlalchemy.sql.sqltypes import BigInteger, Boolean, DateTime, Integer
 from api.database import Base
 
 
-class CsvMetadata(Base):
+class ProspectsFiles(Base):
     """Contains metadata for CSV"""
 
     __tablename__ = "csv_metadata"

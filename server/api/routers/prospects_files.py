@@ -23,12 +23,12 @@ def upload_prospects_csv(
         )
 
     #Step 1: Store CSV file somehow?
-    # Maybe add new db table containing each row of csv
-    # Going to use current DB, but might make sense to use a different storage method
+    # Create entry in DB first
+    # Going to add a local folder to store csv files, rename based on db id
 
 
-    #Step 2: Need to return sample data for column matching later if successful upload
-    return {"row1": "row1", "row2": "row2"}
+    #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
+    return {"id": 1, "row1": "row1", "row2": "row2"}
 
 #2
 @router.post("/prospects_files/:id/prospects", response_model=schemas.ProspectResponse)
@@ -68,4 +68,4 @@ def get_upload_status(
 
     # Check csv_metadata table to get completed status/progress, then return info
 
-    return {"completed": True, "total": 1, "processed": 1}
+    return {"total": 1, "processed": 1}

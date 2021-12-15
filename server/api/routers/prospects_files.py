@@ -8,7 +8,7 @@ from api.dependencies.db import get_db
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
 #1
-@router.post("/prospects_files", response_model=schemas.ProspectResponse)
+@router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
 def upload_prospects_csv(
     current_user: schemas.User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -28,7 +28,7 @@ def upload_prospects_csv(
     return {"id": 1, "row1": "row1", "row2": "row2"}
 
 #2
-@router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectResponse)
+@router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsImport)
 def import_csv(
     current_user: schemas.User = Depends(get_current_user),
     id: int,
@@ -50,7 +50,7 @@ def import_csv(
     return {"csvid": 1}
 
 #3
-@router.get("/prospects_files/{id}/progress", response_model=schemas.ProspectResponse)
+@router.get("/prospects_files/{id}/progress", response_model=schemas.ProspectsFileProgress)
 def get_upload_status(
     current_user: schemas.User = Depends(get_current_user),
     id: int,

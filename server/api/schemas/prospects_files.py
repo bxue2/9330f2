@@ -1,24 +1,17 @@
-from datetime import datetime
 from typing import List
 
 from pydantic import BaseModel
-from pydantic.networks import EmailStr
 
 
-class ProspectsUpload(BaseModel):
+class ProspectsFileUpload(BaseModel):
     id: int
-    rows: str[][]
+    rows: List[List[str]]
 
 
-class ProspectCreate(BaseModel):
-    email: EmailStr
-    first_name: str
-    last_name: str
+class ProspectsFileImport(BaseModel):
+    id: int
 
 
-class ProspectResponse(BaseModel):
-    """One page of prospects"""
-
-    prospects: List[Prospect]
-    size: int
+class ProspectsFileProgress(BaseModel):
     total: int
+    processed: int

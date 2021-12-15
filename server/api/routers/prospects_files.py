@@ -1,4 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.param_functions import File
+from pydantic.main import BaseModel
 from sqlalchemy.orm.session import Session
 from api import schemas
 from api.dependencies.auth import get_current_user
@@ -7,11 +9,21 @@ from api.dependencies.db import get_db
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
+#Request body for route 1
+class CSVFile(BaseModel):
+    file: File
+
+#Request body for route 2
+class CSVHeaders(BaseModel):
+    firstname: str = None,
+    lastname: str = None
+
 #1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
 def upload_prospects_csv(
     current_user: schemas.User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    csv: CSVFile
 ):
     """Verify User"""
     if not current_user:
@@ -28,11 +40,10 @@ def upload_prospects_csv(
     return {"id": 1, "row1": "row1", "row2": "row2"}
 
 #2
-#set default id to 0 because my linter was complaining about default value not existing, not sure if actually needed
 @router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport)
 def import_csv(
     current_user: schemas.User = Depends(get_current_user),
-    id: int = 0,
+    id: int,
     db: Session = Depends(get_db),
 ):
     """Verify User"""
@@ -42,8 +53,8 @@ def import_csv(
         )
     # Step 1: Parse request to get column names
     print(id)
-    prospects = ProspectCrud.get_users_prospects(db, current_user.id, page, page_size)
-    total = ProspectCrud.get_user_prospects_total(db, current_user.id)
+    # prospects = ProspectCrud.get_users_prospects(db, current_user.id, page, page_size)
+    # total = ProspectCrud.get_user_prospects_total(db, current_user.id)
 
     #Step 2: Start uploading, want this to happen async though
 
@@ -54,7 +65,7 @@ def import_csv(
 @router.get("/prospects_files/{id}/progress", response_model=schemas.ProspectsFileProgress)
 def get_upload_status(
     current_user: schemas.User = Depends(get_current_user),
-    id: int = 0,
+    id: int,
     db: Session = Depends(get_db),
 ):
     """Verify User"""

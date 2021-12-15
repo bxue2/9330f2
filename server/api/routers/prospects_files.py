@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm.session import Session
 from api import schemas
 from api.dependencies.auth import get_current_user
-from api.core.constants import DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 from api.crud import ProspectCrud
 from api.dependencies.db import get_db
 

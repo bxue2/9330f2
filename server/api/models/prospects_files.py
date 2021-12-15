@@ -9,7 +9,7 @@ from api.database import Base
 class ProspectsFiles(Base):
     """Contains metadata for CSV"""
 
-    __tablename__ = "csv_metadata"
+    __tablename__ = "prospects_files"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     total_rows = Column(Integer, nullable=False)

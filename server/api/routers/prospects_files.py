@@ -28,10 +28,11 @@ def upload_prospects_csv(
     return {"id": 1, "row1": "row1", "row2": "row2"}
 
 #2
-@router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsImport)
+#set default id to 0 because my linter was complaining about default value not existing, not sure if actually needed
+@router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport)
 def import_csv(
     current_user: schemas.User = Depends(get_current_user),
-    id: int,
+    id: int = 0,
     db: Session = Depends(get_db),
 ):
     """Verify User"""
@@ -53,7 +54,7 @@ def import_csv(
 @router.get("/prospects_files/{id}/progress", response_model=schemas.ProspectsFileProgress)
 def get_upload_status(
     current_user: schemas.User = Depends(get_current_user),
-    id: int,
+    id: int = 0,
     db: Session = Depends(get_db),
 ):
     """Verify User"""

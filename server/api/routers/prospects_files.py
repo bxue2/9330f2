@@ -39,8 +39,7 @@ async def upload_prospects_csv(
     try:
         db.commit()
     except Exception as e:
-        print(e)
-        #return a 400 here
+        raise HTTPException(status_code=503, detail="Could not connect to db")
 
     # Going to add a local folder to store csv files, rename based on db id
     with open(f'./csv_store/csv_{file_entry.id}.csv', "wb") as dest:
@@ -61,8 +60,10 @@ async def upload_prospects_csv(
         # Updating number of rows in csv in db
         # I don't think there's a way to get the row count without reading the whole file(?)
         file_entry.total_rows = row_count
-        #might need try catch here
-        db.commit()
+        try:
+            db.commit()
+        except Exception as e:
+            raise HTTPException(status_code=503, detail="Could not connect to db")
 
     # Had difficulties directly converting file to something parsable
     # csvread = csv.reader(codecs.iterdecode(file.file, 'utf-8'))

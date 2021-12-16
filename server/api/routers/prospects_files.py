@@ -6,6 +6,7 @@ from api.dependencies.auth import get_current_user
 from api.crud import ProspectCrud
 from api.dependencies.db import get_db
 import shutil
+import csv
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
@@ -37,10 +38,14 @@ def upload_prospects_csv(
 
     with open("./csv_store/dest_csv.csv", "wb") as dest:
         shutil.copyfileobj(file.file, dest)
-
+        csvread = csv.reader(dest, delimiter=',')
+        for i in range(3):
+            print(next(csvread))
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
     # Need to parse first few rows of csv
-    sample_rows = [list(1),list(2),list(3)]
+
+
+    sample_rows = [[str(i)] for i in range(3)]
     return {"id": 1, "rows": sample_rows}
 
 #2

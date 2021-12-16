@@ -3,6 +3,7 @@ from typing import List
 from pydantic import BaseModel
 
 
+
 class ProspectsFileUpload(BaseModel):
     id: int
     rows: List[List[str]]

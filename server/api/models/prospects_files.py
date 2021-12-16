@@ -12,7 +12,8 @@ class ProspectsFiles(Base):
     __tablename__ = "prospects_files"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    # maybe add link to user table?
     user_id = Column(BigInteger, nullable=False)
     total_rows = Column(Integer, nullable=False)
     processed = Column(Integer, nullable=False)
+
+    user = relationship("User", back_populates="prospects_files", foreign_keys=[user_id])

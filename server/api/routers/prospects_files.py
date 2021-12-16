@@ -35,7 +35,7 @@ def upload_prospects_csv(
     print(file.file)
     print(file.filename)
 
-    with open("dest_csv.csv", "wb") as dest:
+    with open("./csv_store/dest_csv.csv", "wb") as dest:
         shutil.copyfileobj(file.file, dest)
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv

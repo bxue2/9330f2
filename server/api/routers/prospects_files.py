@@ -32,11 +32,9 @@ async def upload_prospects_csv(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
 
-    print(current_user.id)
-
     #Step 1: Store CSV file somehow?
     # Create entry in DB first
-    file_entry = ProspectsFiles(total_rows = 0, processed = 0)
+    file_entry = ProspectsFiles(user_id= current_user.id, total_rows = 0, processed = 0)
     db.add(file_entry)
     try:
         db.commit()

@@ -13,5 +13,6 @@ class ProspectsFiles(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     # maybe add link to user table?
+    user_id = Column(BigInteger, nullable=False)
     total_rows = Column(Integer, nullable=False)
     processed = Column(Integer, nullable=False)

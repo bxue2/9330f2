@@ -37,7 +37,7 @@ def upload_prospects_csv(
     #Step 1: Store CSV file somehow?
     # Create entry in DB first
     # Going to add a local folder to store csv files, rename based on db id
-
+    
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
     return {"id": 1, "rows": "row1"}

@@ -46,9 +46,13 @@ async def upload_prospects_csv(
     sample_rows = []
     with open("./csv_store/dest_csv.csv", "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, 'utf-8'))
+        row_count = 0
         for row in csvtest:
+            # control how many rows to add to sample
+            if row_count >= 4:
+                break
             sample_rows.append(row)
-            print(row)
+            row_count += 1
 
     # Had difficulties directly converting file to something parsable
     # csvread = csv.reader(codecs.iterdecode(file.file, 'utf-8'))

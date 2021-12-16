@@ -7,6 +7,7 @@ from api.crud import ProspectCrud
 from api.dependencies.db import get_db
 import shutil
 import csv
+import codecs
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
@@ -20,7 +21,7 @@ class CSVHeaders(BaseModel):
 
 #1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
-def upload_prospects_csv(
+async def upload_prospects_csv(
     # current_user: schemas.User = Depends(get_current_user),
     file: UploadFile = File(...)
 ):
@@ -38,14 +39,23 @@ def upload_prospects_csv(
 
     with open("./csv_store/dest_csv.csv", "wb") as dest:
         shutil.copyfileobj(file.file, dest)
-        csvread = csv.reader(dest, delimiter=',')
-        for i in range(3):
-            print(next(csvread))
+
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
     # Need to parse first few rows of csv
+    #Not sure if good practice to read file after writing, might have race conditions?
+    sample_rows = []
+    with open("./csv_store/dest_csv.csv", "rb") as read:
+        csvtest = csv.reader(codecs.iterdecode(read, 'utf-8'))
+        for row in csvtest:
+            sample_rows.append(row)
+            print(row)
 
+    # Had difficulties directly converting file to something parsable
+    # csvread = csv.reader(codecs.iterdecode(file.file, 'utf-8'))
+    # print(csvread)
+    # for row in csvread:
+    #     print(row[0])
 
-    sample_rows = [[str(i)] for i in range(3)]
     return {"id": 1, "rows": sample_rows}
 
 #2

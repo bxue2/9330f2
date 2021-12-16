@@ -36,13 +36,14 @@ async def upload_prospects_csv(
     # Create entry in DB first
     file_entry = ProspectsFiles(total_rows = 0, processed = 0)
     db.add(file_entry)
-
     try:
         db.commit()
     except Exception as e:
         print(e)
+        #return a 400 here
+
     # Going to add a local folder to store csv files, rename based on db id
-    with open("./csv_store/dest_csv.csv", "wb") as dest:
+    with open(f'./csv_store/csv_{file_entry.id}.csv', "wb") as dest:
         shutil.copyfileobj(file.file, dest)
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv

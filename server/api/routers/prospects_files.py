@@ -15,8 +15,11 @@ class CSVFile(BaseModel):
 
 #Request body for route 2
 class CSVHeaders(BaseModel):
-    firstname: str = None,
-    lastname: str = None
+    email_col: int
+    first_name_col: int = None
+    last_name_col: int = None
+    force: bool
+    has_headers: bool
 
 #1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
@@ -37,7 +40,7 @@ def upload_prospects_csv(
 
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
-    return {"id": 1, "row1": "row1", "row2": "row2"}
+    return {"id": 1, "rows": "row1"}
 
 #2
 @router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport)

@@ -22,15 +22,17 @@ class CSVHeaders(BaseModel):
 #1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
 async def upload_prospects_csv(
-    # current_user: schemas.User = Depends(get_current_user),
+    current_user: schemas.User = Depends(get_current_user),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    # """Verify User"""
-    # if not current_user:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
-    #     )
+    """Verify User"""
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
+        )
+
+    print(current_user.id)
 
     #Step 1: Store CSV file somehow?
     # Create entry in DB first

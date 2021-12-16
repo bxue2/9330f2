@@ -5,6 +5,7 @@ from api import schemas
 from api.dependencies.auth import get_current_user
 from api.crud import ProspectCrud
 from api.dependencies.db import get_db
+import shutil
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
@@ -31,7 +32,11 @@ def upload_prospects_csv(
     #Step 1: Store CSV file somehow?
     # Create entry in DB first
     # Going to add a local folder to store csv files, rename based on db id
-    # file.
+    print(file.file)
+    print(file.filename)
+
+    with open("/csv_store/dest_csv.csv", "wb") as dest:
+        shutil.copyfileobj(file.file, dest)
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
     return {"id": 1, "rows": "row1"}
@@ -40,7 +45,7 @@ def upload_prospects_csv(
 @router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport)
 def import_csv(
     current_user: schemas.User = Depends(get_current_user),
-    id: int,
+    id: int = 0,
     db: Session = Depends(get_db),
 ):
     """Verify User"""
@@ -62,7 +67,7 @@ def import_csv(
 @router.get("/prospects_files/{id}/progress", response_model=schemas.ProspectsFileProgress)
 def get_upload_status(
     current_user: schemas.User = Depends(get_current_user),
-    id: int,
+    id: int = 0,
     db: Session = Depends(get_db),
 ):
     """Verify User"""

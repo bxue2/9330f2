@@ -33,12 +33,15 @@ async def upload_prospects_csv(
         )
 
     #Step 1: Store CSV file somehow?
+    # Maybe verify the file is actually a csv at some point, unless it's handled frontend already
+
     # Create entry in DB first
     file_entry = ProspectsFiles(user_id= current_user.id, total_rows = 0, processed = 0)
     db.add(file_entry)
     try:
         db.commit()
     except Exception as e:
+        # maybe not the right error code
         raise HTTPException(status_code=503, detail="Could not connect to db")
 
     # Going to add a local folder to store csv files, rename based on db id

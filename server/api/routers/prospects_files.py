@@ -55,10 +55,14 @@ async def upload_prospects_csv(
         row_count = 0
         for row in csvtest:
             # control how many rows to add to sample
-            if row_count >= 4:
-                break
-            sample_rows.append(row)
+            if row_count < 4:
+                sample_rows.append(row)
             row_count += 1
+        # Updating number of rows in csv in db
+        # I don't think there's a way to get the row count without reading the whole file(?)
+        file_entry.total_rows = row_count
+        #might need try catch here
+        db.commit()
 
     # Had difficulties directly converting file to something parsable
     # csvread = csv.reader(codecs.iterdecode(file.file, 'utf-8'))

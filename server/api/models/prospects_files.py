@@ -12,5 +12,6 @@ class ProspectsFiles(Base):
     __tablename__ = "prospects_files"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
+    # maybe add link to user table?
     total_rows = Column(Integer, nullable=False)
     processed = Column(Integer, nullable=False)

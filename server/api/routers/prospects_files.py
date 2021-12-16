@@ -5,9 +5,9 @@ from api import schemas
 from api.dependencies.auth import get_current_user
 from api.crud import ProspectCrud
 from api.dependencies.db import get_db
-import shutil
-import csv
-import codecs
+import shutil, csv, codecs
+
+from api.models import ProspectsFiles
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
@@ -23,7 +23,8 @@ class CSVHeaders(BaseModel):
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
 async def upload_prospects_csv(
     # current_user: schemas.User = Depends(get_current_user),
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
     # """Verify User"""
     # if not current_user:
@@ -33,10 +34,14 @@ async def upload_prospects_csv(
 
     #Step 1: Store CSV file somehow?
     # Create entry in DB first
-    # Going to add a local folder to store csv files, rename based on db id
-    print(file.file)
-    print(file.filename)
+    file_entry = ProspectsFiles(total_rows = 0, processed = 0)
+    db.add(file_entry)
 
+    try:
+        db.commit()
+    except Exception as e:
+        print(e)
+    # Going to add a local folder to store csv files, rename based on db id
     with open("./csv_store/dest_csv.csv", "wb") as dest:
         shutil.copyfileobj(file.file, dest)
 

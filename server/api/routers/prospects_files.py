@@ -74,7 +74,7 @@ async def upload_prospects_csv(
     # for row in csvread:
     #     print(row[0])
 
-    return {"id": 1, "rows": sample_rows}
+    return {"id": file_entry.id, "rows": sample_rows}
 
 #2
 @router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport)

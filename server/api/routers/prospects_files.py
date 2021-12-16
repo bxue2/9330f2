@@ -35,11 +35,13 @@ def upload_prospects_csv(
     print(file.file)
     print(file.filename)
 
-    with open("/csv_store/dest_csv.csv", "wb") as dest:
+    with open("dest_csv.csv", "wb") as dest:
         shutil.copyfileobj(file.file, dest)
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
-    return {"id": 1, "rows": "row1"}
+    # Need to parse first few rows of csv
+    sample_rows = [list(1),list(2),list(3)]
+    return {"id": 1, "rows": sample_rows}
 
 #2
 @router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport)

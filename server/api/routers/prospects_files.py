@@ -8,6 +8,7 @@ from api.crud import ProspectsFilesCrud, ProspectCrud
 import shutil, csv, codecs
 
 from api.models import ProspectsFiles
+from server.api.models.prospects import Prospect
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
@@ -44,7 +45,9 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
                     continue
             # else create new prospect entry
             else:
-                pass
+                first_name = ""
+                last_name
+                ProspectCrud.create_prospect(db, file_entry.user_id, )
 
     #cleanup after import finishes?
 

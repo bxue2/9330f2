@@ -32,9 +32,7 @@ async def upload_prospects_csv(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
 
-    #Step 1: Store CSV file somehow?
-    # Maybe verify the file is actually a csv at some point, unless it's handled frontend already
-
+    #Step 1: Verify CSV file, create DB entry, store it locally
     if(file.content_type != 'text/csv'):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Please input a csv file"
@@ -100,7 +98,7 @@ def import_csv(
     # total = ProspectCrud.get_user_prospects_total(db, current_user.id)
 
     #Step 2: Start uploading, want this to happen async though
-
+    
     # Step 3: Return id number of csv in table so we know what to track? doc mentions prospectsfile object?
     return {"csvid": 1}
 

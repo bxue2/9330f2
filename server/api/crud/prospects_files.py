@@ -30,9 +30,16 @@ class ProspectsFilesCrud:
     def update_prospects_file(
         cls,
         db: Session,
-        user_id: int,
+        id: int,
+        total_rows: int,
+        processed: int,
     ):
-        pass
+        file_entry = db.query(ProspectsFiles).get(id)
+        file_entry.total_rows = total_rows
+        file_entry.processed = processed
+        db.commit()
+        db.refresh(file_entry)
+        return file_entry
 
     @classmethod
     def delete_prospects_file(

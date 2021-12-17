@@ -94,9 +94,9 @@ def import_csv(
     # total = ProspectCrud.get_user_prospects_total(db, current_user.id)
 
     #Step 2: Start uploading, want this to happen async though
-
-    # Step 3: Return id number of csv in table so we know what to track? doc mentions prospectsfile object?
-    return {"csvid": 1}
+    file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
+    # Step 3: Return prospectsfile object?
+    return {"prospects_files": file_entry}
 
 #3
 @router.get("/prospects_files/{id}/progress", response_model=schemas.ProspectsFileProgress)
@@ -112,5 +112,6 @@ def get_upload_status(
         )
 
     # Check csv_metadata table to get completed status/progress, then return info
+    file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
 
-    return {"total": 1, "processed": 1}
+    return {"total": file_entry.total_rows, "processed": file_entry.processed}

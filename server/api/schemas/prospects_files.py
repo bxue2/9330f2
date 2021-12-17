@@ -2,6 +2,15 @@ from typing import List
 
 from pydantic import BaseModel
 
+class ProspectsFiles(BaseModel):
+    id: int
+    user_id: int
+    total_rows: int
+    processed: int
+
+    class Config:
+        orm_mode = True
+
 
 
 class ProspectsFileUpload(BaseModel):
@@ -10,7 +19,7 @@ class ProspectsFileUpload(BaseModel):
 
 
 class ProspectsFileImport(BaseModel):
-    id: int
+    prospects_files: ProspectsFiles
 
 
 class ProspectsFileProgress(BaseModel):

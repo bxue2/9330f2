@@ -12,7 +12,7 @@ class ProspectsFiles(Base):
     __tablename__ = "prospects_files"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("users.id"), primary_key=True)
+    user_id = Column(BigInteger, ForeignKey("users.id"))
     total_rows = Column(Integer, nullable=False)
     processed = Column(Integer, nullable=False)
 

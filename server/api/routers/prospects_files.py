@@ -8,7 +8,6 @@ from api.crud import ProspectsFilesCrud, ProspectCrud
 import shutil, csv, codecs
 
 from api.models import ProspectsFiles
-from server.api.models.prospects import Prospect
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
@@ -32,6 +31,12 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
                 continue
 
             email = row[params.email_col]
+            first_name = ""
+            if(params.first_name_col):
+                first_name = row[params.first_name_col]
+            last_name = ""
+            if(params.last_name_col):
+                last_name = row[params.last_name_col]
             print(row)
             prospect = ProspectCrud.get_prospect_by_email_user(db, file_entry.user_id, email)
             print(prospect)
@@ -39,15 +44,15 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
             if prospect:
                 # If yes, and force is true, update
                 if params.force:
-                    pass
+                    ProspectCrud.update_prospect(db, prospect, first_name, last_name)
                 # If force is false, continue
                 else:
                     continue
             # else create new prospect entry
             else:
-                first_name = ""
-                last_name
-                ProspectCrud.create_prospect(db, file_entry.user_id, )
+
+                prospect_create = {'email': email, 'first_name': first_name, 'last_name': last_name}
+                ProspectCrud.create_prospect(db, file_entry.user_id, prospect_create)
 
     #cleanup after import finishes?
 

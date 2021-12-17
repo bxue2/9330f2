@@ -45,6 +45,18 @@ class ProspectsFilesCrud:
         return file_entry
 
     @classmethod
+    def increment_processed_count(
+        cls,
+        db: Session,
+        file_entry: ProspectsFiles
+    ):
+        file_entry.processed += 1
+        db.commit()
+        db.refresh(file_entry)
+        return file_entry
+
+    #Not sure if needed, out of scope
+    @classmethod
     def delete_prospects_file(
         cls,
         db: Session,

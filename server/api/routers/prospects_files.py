@@ -21,6 +21,8 @@ class CSVHeaders(BaseModel):
 
 #Helper for importing prospects in route 2
 def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles):
+    # Reset for processed count for testing
+    ProspectsFilesCrud.update_prospects_file(db, file_entry, file_entry.total_rows, 0)
     with open(f'./csv_store/csv_{file_entry.id}.csv', "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, 'utf-8'))
         #Skip first row if has_headers is true
@@ -28,6 +30,7 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
         for row in csvtest:
             if header_check:
                 header_check = False
+                ProspectsFilesCrud.increment_processed_count(db, file_entry)
                 continue
 
             email = row[params.email_col]
@@ -51,10 +54,9 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
                     continue
             # else create new prospect entry
             else:
-
                 prospect_create = {'email': email, 'first_name': first_name, 'last_name': last_name}
                 ProspectCrud.create_prospect(db, file_entry.user_id, prospect_create)
-
+            ProspectsFilesCrud.increment_processed_count(db, file_entry)
     #cleanup after import finishes?
 
 #1

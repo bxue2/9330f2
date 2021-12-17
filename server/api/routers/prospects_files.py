@@ -78,7 +78,6 @@ async def upload_prospects_csv(
     # Create entry in DB first
     file_entry = ProspectsFilesCrud.create_prospects_file(db, current_user.id, 0, 0)
 
-    print(file_entry.id)
     # Going to add a local folder to store csv files, rename based on db id
     with open(f'./csv_store/csv_{file_entry.id}.csv', "wb") as dest:
         shutil.copyfileobj(file.file, dest)

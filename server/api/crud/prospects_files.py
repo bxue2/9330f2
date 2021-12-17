@@ -4,12 +4,14 @@ from api.models import ProspectsFiles
 
 class ProspectsFilesCrud:
     @classmethod
-    def get_prospects_file(
+    def get_prospects_file_by_id(
         cls,
         db: Session,
-        user_id: int,
+        id: int
     ):
-        pass
+        file_entry = db.query(ProspectsFiles).get(id)
+
+        return file_entry
 
     @classmethod
     def create_prospects_file(
@@ -26,15 +28,16 @@ class ProspectsFilesCrud:
 
         return file_entry
 
+    #Assumes you use get_prospects_file() before calling this so you can pass it in
+    #Need to verify matching user id's before calling this
     @classmethod
     def update_prospects_file(
         cls,
         db: Session,
-        id: int,
+        file_entry: ProspectsFiles,
         total_rows: int,
         processed: int,
     ):
-        file_entry = db.query(ProspectsFiles).get(id)
         file_entry.total_rows = total_rows
         file_entry.processed = processed
         db.commit()

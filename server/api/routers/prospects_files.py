@@ -20,21 +20,33 @@ class CSVHeaders(BaseModel):
     has_headers: bool = False
 
 #Helper for importing prospects in route 2
-def import_prospects(params: CSVHeaders, file_entry: ProspectsFiles):
+def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles):
     with open(f'./csv_store/csv_{file_entry.id}.csv', "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, 'utf-8'))
-        #Skip first row
+        #Skip first row if has_headers is true
         header_check = params.has_headers
         for row in csvtest:
             if header_check:
                 header_check = False
                 continue
+
+            email = row[params.email_col]
+            print(row)
+            prospect = ProspectCrud.get_prospect_by_email_user(db, file_entry.user_id, email)
+            print(prospect)
             # Check if prospect already exists (by email)
-            # If yes, and force is true, update
-            # If force is false, continue
+            if prospect:
+                # If yes, and force is true, update
+                if params.force:
+                    pass
+                # If force is false, continue
+                else:
+                    continue
             # else create new prospect entry
-            #
-            pass
+            else:
+                pass
+
+    #cleanup after import finishes?
 
 #1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
@@ -114,7 +126,7 @@ def import_csv(
     #Step 2: Start uploading, want this to happen async though
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
 
-    import_prospects(params, file_entry)
+    import_prospects(db, params, file_entry)
 
     # Step 3: Return prospectsfile object?
     return {"prospects_files": file_entry}

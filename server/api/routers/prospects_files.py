@@ -3,7 +3,6 @@ from pydantic.main import BaseModel
 from sqlalchemy.orm.session import Session
 from api import schemas
 from api.dependencies.auth import get_current_user
-from api.crud import ProspectCrud
 from api.dependencies.db import get_db
 from api.crud import ProspectsFilesCrud
 import shutil, csv, codecs
@@ -19,6 +18,23 @@ class CSVHeaders(BaseModel):
     last_name_col: int = None
     force: bool = False
     has_headers: bool = False
+
+#Helper for importing prospects in route 2
+def import_prospects(params: CSVHeaders, file_entry: ProspectsFiles):
+    with open(f'./csv_store/csv_{file_entry.id}.csv', "rb") as read:
+        csvtest = csv.reader(codecs.iterdecode(read, 'utf-8'))
+        #Skip first row
+        header_check = params.has_headers
+        for row in csvtest:
+            if header_check:
+                header_check = False
+                continue
+            # Check if prospect already exists (by email)
+            # If yes, and force is true, update
+            # If force is false, continue
+            # else create new prospect entry
+            #
+            pass
 
 #1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
@@ -97,6 +113,9 @@ def import_csv(
 
     #Step 2: Start uploading, want this to happen async though
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
+
+    import_prospects(params, file_entry)
+
     # Step 3: Return prospectsfile object?
     return {"prospects_files": file_entry}
 

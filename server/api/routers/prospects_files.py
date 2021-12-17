@@ -4,7 +4,7 @@ from sqlalchemy.orm.session import Session
 from api import schemas
 from api.dependencies.auth import get_current_user
 from api.dependencies.db import get_db
-from api.crud import ProspectsFilesCrud
+from api.crud import ProspectsFilesCrud, ProspectCrud
 import shutil, csv, codecs
 
 from api.models import ProspectsFiles

@@ -54,3 +54,9 @@ class ProspectCrud:
             .all()
         )
         return {row.id for row in res}
+
+    @classmethod
+    def get_prospect_by_email_user(
+        cls, db: Session, user_id: int, email: str
+    ):
+        return db.query(Prospect).filter(Prospect.user_id == user_id, Prospect.email == email).first()

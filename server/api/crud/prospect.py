@@ -69,5 +69,5 @@ class ProspectCrud:
         prospect.last_name = last_name
         prospect.updated_at = func.now()
         db.commit()
-        db.refresh()
+        db.refresh(prospect)
         return prospect

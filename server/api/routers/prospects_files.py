@@ -32,11 +32,12 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
 
             email = row[params.email_col]
             first_name = ""
-            if(params.first_name_col):
+            if(params.first_name_col != None):
                 first_name = row[params.first_name_col]
             last_name = ""
-            if(params.last_name_col):
+            if(params.last_name_col != None):
                 last_name = row[params.last_name_col]
+            print(params.first_name_col)
             print(row)
             prospect = ProspectCrud.get_prospect_by_email_user(db, file_entry.user_id, email)
             print(prospect)

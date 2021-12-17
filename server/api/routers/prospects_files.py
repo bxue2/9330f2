@@ -35,6 +35,11 @@ async def upload_prospects_csv(
     #Step 1: Store CSV file somehow?
     # Maybe verify the file is actually a csv at some point, unless it's handled frontend already
 
+    if(file.content_type != 'text/csv'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Please input a csv file"
+        )
+
     # Create entry in DB first
     file_entry = ProspectsFiles(user_id= current_user.id, total_rows = 0, processed = 0)
     db.add(file_entry)
@@ -44,6 +49,7 @@ async def upload_prospects_csv(
         # maybe not the right error code
         raise HTTPException(status_code=503, detail="Could not connect to db")
 
+    print(file_entry.id)
     # Going to add a local folder to store csv files, rename based on db id
     with open(f'./csv_store/csv_{file_entry.id}.csv', "wb") as dest:
         shutil.copyfileobj(file.file, dest)
@@ -52,7 +58,7 @@ async def upload_prospects_csv(
     # Need to parse first few rows of csv
     #Not sure if good practice to read file after writing, might have race conditions?
     sample_rows = []
-    with open("./csv_store/dest_csv.csv", "rb") as read:
+    with open(f'./csv_store/csv_{file_entry.id}.csv', "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, 'utf-8'))
         row_count = 0
         for row in csvtest:

@@ -17,8 +17,8 @@ class CSVHeaders(BaseModel):
     email_col: int
     first_name_col: int = None
     last_name_col: int = None
-    force: bool
-    has_headers: bool
+    force: bool = False
+    has_headers: bool = False
 
 #1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
@@ -82,6 +82,7 @@ def import_csv(
     current_user: schemas.User = Depends(get_current_user),
     id: int = 0,
     db: Session = Depends(get_db),
+    params: CSVHeaders = None,
 ):
     """Verify User"""
     if not current_user:
@@ -90,6 +91,7 @@ def import_csv(
         )
     # Step 1: Parse request to get column names
     print(id)
+    print(params.email_col)
     # prospects = ProspectCrud.get_users_prospects(db, current_user.id, page, page_size)
     # total = ProspectCrud.get_user_prospects_total(db, current_user.id)
 

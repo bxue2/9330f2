@@ -1,4 +1,6 @@
 from sqlalchemy.orm.session import Session
+from api import schemas
+from api.models import ProspectsFiles
 
 class ProspectsFilesCrud:
     @classmethod
@@ -12,8 +14,15 @@ class ProspectsFilesCrud:
     def create_prospects_file(
         db: Session,
         user_id: int,
+        total_rows: int,
+        processed: int
     ):
-        pass
+        file_entry = ProspectsFiles(user_id = user_id, total_rows = total_rows, processed = processed)
+        db.add(file_entry)
+        db.commit()
+        db.refresh(file_entry)
+
+        return file_entry
 
     @classmethod
     def update_prospects_file(

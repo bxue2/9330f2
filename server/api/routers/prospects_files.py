@@ -5,6 +5,7 @@ from api import schemas
 from api.dependencies.auth import get_current_user
 from api.crud import ProspectCrud
 from api.dependencies.db import get_db
+from api.crud import ProspectsFilesCrud
 import shutil, csv, codecs
 
 from api.models import ProspectsFiles
@@ -39,13 +40,7 @@ async def upload_prospects_csv(
         )
 
     # Create entry in DB first
-    file_entry = ProspectsFiles(user_id= current_user.id, total_rows = 0, processed = 0)
-    db.add(file_entry)
-    try:
-        db.commit()
-    except Exception as e:
-        # maybe not the right error code
-        raise HTTPException(status_code=503, detail="Could not connect to db")
+    file_entry = ProspectsFilesCrud.create_prospects_file(db, current_user.id, 0, 0)
 
     print(file_entry.id)
     # Going to add a local folder to store csv files, rename based on db id
@@ -98,7 +93,7 @@ def import_csv(
     # total = ProspectCrud.get_user_prospects_total(db, current_user.id)
 
     #Step 2: Start uploading, want this to happen async though
-    
+
     # Step 3: Return id number of csv in table so we know what to track? doc mentions prospectsfile object?
     return {"csvid": 1}
 

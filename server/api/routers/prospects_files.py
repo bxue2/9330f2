@@ -30,7 +30,6 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
         for row in csvtest:
             if header_check:
                 header_check = False
-                ProspectsFilesCrud.increment_processed_count(db, file_entry)
                 continue
 
             email = row[params.email_col]
@@ -46,6 +45,7 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
                 # If yes, and force is true, update
                 if params.force:
                     ProspectCrud.update_prospect(db, prospect, first_name, last_name)
+                    ProspectsFilesCrud.increment_processed_count(db, file_entry)
                 # If force is false, go to next row
                 else:
                     continue
@@ -53,7 +53,7 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
             else:
                 prospect_create = {'email': email, 'first_name': first_name, 'last_name': last_name}
                 ProspectCrud.create_prospect(db, file_entry.user_id, prospect_create)
-            ProspectsFilesCrud.increment_processed_count(db, file_entry)
+                ProspectsFilesCrud.increment_processed_count(db, file_entry)
     #cleanup after import finishes, delete local csv
     os.remove(f'./csv_store/csv_{file_entry.id}.csv')
 

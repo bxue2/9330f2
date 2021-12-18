@@ -54,3 +54,11 @@ class ProspectsFilesCrud:
         db.commit()
         db.refresh(file_entry)
         return file_entry
+
+    @classmethod
+    def delete_prospects_file(
+        cls,
+        db: Session,
+        id: int
+    ):
+        pass

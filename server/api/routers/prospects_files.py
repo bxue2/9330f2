@@ -88,6 +88,7 @@ async def upload_prospects_csv(
     file_entry = ProspectsFilesCrud.create_prospects_file(db, current_user.id, 0, 0)
 
     # Going to add a local folder to store csv files, rename based on db id
+    # Using id for file name to prevent duplicates, timestamps could theoretically overlap?
     with open(f'./csv_store/csv_{file_entry.id}.csv', "wb") as dest:
         dest.write(file_content)
 

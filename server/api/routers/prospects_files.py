@@ -5,7 +5,7 @@ from api import schemas
 from api.dependencies.auth import get_current_user
 from api.dependencies.db import get_db
 from api.crud import ProspectsFilesCrud, ProspectCrud
-import csv, codecs, os
+import csv, codecs, os, time
 
 from api.models import ProspectsFiles
 
@@ -28,8 +28,13 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
         #Skip first row if has_headers is true
         header_check = params.has_headers
         for row in csvtest:
+            # test code to make sure async is working
+            # time.sleep(8)
+            # print('next row')
+
             if header_check:
                 header_check = False
+                ProspectsFilesCrud.increment_processed_count(db, file_entry)
                 continue
 
             email = row[params.email_col]
@@ -45,7 +50,6 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
                 # If yes, and force is true, update
                 if params.force:
                     ProspectCrud.update_prospect(db, prospect, first_name, last_name)
-                    ProspectsFilesCrud.increment_processed_count(db, file_entry)
                 # If force is false, go to next row
                 else:
                     continue
@@ -53,7 +57,7 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
             else:
                 prospect_create = {'email': email, 'first_name': first_name, 'last_name': last_name}
                 ProspectCrud.create_prospect(db, file_entry.user_id, prospect_create)
-                ProspectsFilesCrud.increment_processed_count(db, file_entry)
+            ProspectsFilesCrud.increment_processed_count(db, file_entry)
     #cleanup after import finishes, delete local csv
     os.remove(f'./csv_store/csv_{file_entry.id}.csv')
 
@@ -93,8 +97,7 @@ async def upload_prospects_csv(
         dest.write(file_content)
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
-    # Need to parse first few rows of csv
-    #Not sure if good practice to read file after writing, might have race conditions?
+    # Store first few rows of csv to return
     sample_rows = []
     # control how many rows to add to sample
     return_row_count = 4
@@ -140,7 +143,7 @@ def import_csv(
             status_code=status.HTTP_400_BAD_REQUEST, detail="File already imported"
         )
 
-    #Step 1: Get ProspectsFiles db entry, import, want this to happen async though
+    #Step 1: Get ProspectsFiles db entry, import is now async
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
 
     background_tasks.add_task(import_prospects, db, params, file_entry)

@@ -61,4 +61,6 @@ class ProspectsFilesCrud:
         db: Session,
         id: int
     ):
-        pass
+        file_entry = db.query(ProspectsFiles).get(id)
+        db.delete(file_entry)
+        db.commit()

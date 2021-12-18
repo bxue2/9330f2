@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends, File, UploadFile
+from fastapi import APIRouter, HTTPException, status, Depends, File, UploadFile, BackgroundTasks
 from pydantic.main import BaseModel
 from sqlalchemy.orm.session import Session
 from api import schemas
@@ -121,10 +121,12 @@ async def upload_prospects_csv(
 #2
 @router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport)
 def import_csv(
+    background_tasks: BackgroundTasks,
+    id: int,
+    params: CSVHeaders,
     current_user: schemas.User = Depends(get_current_user),
-    id: int = 0,
     db: Session = Depends(get_db),
-    params: CSVHeaders = None,
+
 ):
     """Verify User"""
     if not current_user:
@@ -133,6 +135,7 @@ def import_csv(
         )
 
     #Step 1: Get ProspectsFiles db entry, import, want this to happen async though
+    background_tasks.add_task
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
     import_prospects(db, params, file_entry)
 
@@ -142,8 +145,8 @@ def import_csv(
 #3
 @router.get("/prospects_files/{id}/progress", response_model=schemas.ProspectsFileProgress)
 def get_upload_status(
+    id: int,
     current_user: schemas.User = Depends(get_current_user),
-    id: int = 0,
     db: Session = Depends(get_db),
 ):
     """Verify User"""

@@ -106,6 +106,9 @@ async def upload_prospects_csv(
                 sample_rows.append(row)
             row_count += 1
         if row_count > 1000000:
+            # cleanup first before throwing exception
+            ProspectsFilesCrud.delete_prospects_file(db, file_entry.id)
+            os.remove(f'./csv_store/csv_{file_entry.id}.csv')
             raise HTTPException(
                 status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail="Max row count is 1,000,000"
             )

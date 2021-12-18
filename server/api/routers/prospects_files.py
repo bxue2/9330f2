@@ -19,7 +19,7 @@ class CSVHeaders(BaseModel):
     force: bool = False
     has_headers: bool = False
 
-#Helper for importing prospects in route 2
+#Helper/Background task for importing prospects in route 2
 def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles):
     # Reset processed count for testing purposes
     # ProspectsFilesCrud.update_prospects_file(db, file_entry, file_entry.total_rows, 0)
@@ -45,6 +45,7 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
             if(params.last_name_col != None):
                 last_name = row[params.last_name_col]
             prospect = ProspectCrud.get_prospect_by_email_user(db, file_entry.user_id, email)
+
             # Check if prospect already exists (by email)
             if prospect:
                 # If yes, and force is true, update
@@ -58,10 +59,11 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
                 prospect_create = {'email': email, 'first_name': first_name, 'last_name': last_name}
                 ProspectCrud.create_prospect(db, file_entry.user_id, prospect_create)
             ProspectsFilesCrud.increment_processed_count(db, file_entry)
+
     #cleanup after import finishes, delete local csv
     os.remove(f'./csv_store/csv_{file_entry.id}.csv')
 
-#1
+#Route 1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
 async def upload_prospects_csv(
     current_user: schemas.User = Depends(get_current_user),
@@ -121,7 +123,7 @@ async def upload_prospects_csv(
 
     return {"id": file_entry.id, "rows": sample_rows}
 
-#2
+#Route 2
 @router.post("/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport)
 def import_csv(
     background_tasks: BackgroundTasks,
@@ -129,7 +131,6 @@ def import_csv(
     params: CSVHeaders,
     current_user: schemas.User = Depends(get_current_user),
     db: Session = Depends(get_db),
-
 ):
     """Verify User"""
     if not current_user:
@@ -152,7 +153,7 @@ def import_csv(
     # Step 3: Return prospectsfile object
     return {"prospects_files": file_entry}
 
-#3
+#Route 3
 @router.get("/prospects_files/{id}/progress", response_model=schemas.ProspectsFileProgress)
 def get_upload_status(
     id: int,

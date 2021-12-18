@@ -5,7 +5,7 @@ from api import schemas
 from api.dependencies.auth import get_current_user
 from api.dependencies.db import get_db
 from api.crud import ProspectsFilesCrud, ProspectCrud
-import shutil, csv, codecs, os
+import csv, codecs, os
 
 from api.models import ProspectsFiles
 
@@ -56,6 +56,7 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
             ProspectsFilesCrud.increment_processed_count(db, file_entry)
     #cleanup after import finishes, delete local csv
     os.remove(f'./csv_store/csv_{file_entry.id}.csv')
+
 #1
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
 async def upload_prospects_csv(
@@ -75,12 +76,25 @@ async def upload_prospects_csv(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Please input a csv file"
         )
 
+    # Check that file is smaller than 200 MB
+    file_content = await file.read()
+    if len(file_content) > 20000000:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail="Max file size is 200 MB"
+        )
+
     # Create entry in DB first
     file_entry = ProspectsFilesCrud.create_prospects_file(db, current_user.id, 0, 0)
 
+
     # Going to add a local folder to store csv files, rename based on db id
     with open(f'./csv_store/csv_{file_entry.id}.csv', "wb") as dest:
-        shutil.copyfileobj(file.file, dest)
+        dest.write(file_content)
+
+    #File byte size check, feel like this should be checked on the frontend
+    # file_size = os.path.getsize(f'./csv_store/csv_{file_entry.id}.csv')
+    # if file_size > 20000000:
+    #     os.remove(f'./csv_store/csv_{file_entry.id}.csv')
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
     # Need to parse first few rows of csv

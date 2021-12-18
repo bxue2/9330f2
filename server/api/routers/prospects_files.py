@@ -77,6 +77,7 @@ async def upload_prospects_csv(
         )
 
     # Check that file is smaller than 200 MB
+    # Feel like this should be checked frontend as well
     file_content = await file.read()
     if len(file_content) > 20000000:
         raise HTTPException(
@@ -86,15 +87,9 @@ async def upload_prospects_csv(
     # Create entry in DB first
     file_entry = ProspectsFilesCrud.create_prospects_file(db, current_user.id, 0, 0)
 
-
     # Going to add a local folder to store csv files, rename based on db id
     with open(f'./csv_store/csv_{file_entry.id}.csv', "wb") as dest:
         dest.write(file_content)
-
-    #File byte size check, feel like this should be checked on the frontend
-    # file_size = os.path.getsize(f'./csv_store/csv_{file_entry.id}.csv')
-    # if file_size > 20000000:
-    #     os.remove(f'./csv_store/csv_{file_entry.id}.csv')
 
     #Step 2: Need to return sample data for column matching later if successful upload plus id of csv
     # Need to parse first few rows of csv
@@ -109,6 +104,10 @@ async def upload_prospects_csv(
             if row_count < return_row_count:
                 sample_rows.append(row)
             row_count += 1
+        if row_count > 1000000:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail="Max row count is 1,000,000"
+            )
         # Updating number of rows in csv in db
         # I don't think there's a way to get the row count without reading the whole file(?)
         ProspectsFilesCrud.update_prospects_file(db, file_entry, row_count, 0)

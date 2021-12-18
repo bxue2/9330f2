@@ -134,8 +134,15 @@ def import_csv(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
 
+    """Check that csv wasn't already imported and the csv was deleted"""
+    if not os.path.exists(f'./csv_store/csv_{id}.csv'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="File already imported"
+        )
+
     #Step 1: Get ProspectsFiles db entry, import, want this to happen async though
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
+
     background_tasks.add_task(import_prospects, db, params, file_entry)
     # import_prospects(db, params, file_entry)
 

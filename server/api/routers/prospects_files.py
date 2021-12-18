@@ -135,9 +135,9 @@ def import_csv(
         )
 
     #Step 1: Get ProspectsFiles db entry, import, want this to happen async though
-    background_tasks.add_task
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
-    import_prospects(db, params, file_entry)
+    background_tasks.add_task(import_prospects, db, params, file_entry)
+    # import_prospects(db, params, file_entry)
 
     # Step 3: Return prospectsfile object
     return {"prospects_files": file_entry}

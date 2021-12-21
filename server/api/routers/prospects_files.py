@@ -106,16 +106,18 @@ async def upload_prospects_csv(
     # Create entry in DB first
     file_entry = ProspectsFilesCrud.create_prospects_file(db, current_user.id, 0, 0)
 
-    # Going to add a local folder to store csv files, rename based on db id
-    # Using id for file name to prevent duplicates
-    with open(get_file_path(file_entry.id), "wb") as dest:
-        dest.write(file_content)
-
-    # Step 2: Need to return sample data for column matching later if successful upload plus id of csv
     # Store first few rows of csv to return
     sample_rows = []
     # control how many rows to add to sample
     return_row_count = 4
+
+    # Going to add a local folder to store csv files, rename based on db id
+    # Using id for file name to prevent duplicates
+    with open(get_file_path(file_entry.id), "wb+") as dest:
+        dest.write(file_content)
+
+    # Step 2: Need to return sample data for column matching later if successful upload plus id of csv
+
     with open(get_file_path(file_entry.id), "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, "utf-8"))
         row_count = 0

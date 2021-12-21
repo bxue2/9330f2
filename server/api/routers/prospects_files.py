@@ -40,7 +40,7 @@ def import_prospects(
 
             email = row[params.email_col]
             # Skip if mandatory email doesn't exist
-            if(email == None or email == ""):
+            if email == None or email == "":
                 continue
 
             first_name = ""
@@ -83,7 +83,7 @@ async def upload_prospects_csv(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    #Verify User
+    # Verify User
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
@@ -115,7 +115,7 @@ async def upload_prospects_csv(
     # Then return sample data for column matching later if successful upload plus id of csv
     with open(get_file_path(file_entry.id), "wb+") as dest:
         dest.write(file_content)
-        #Reset back to start of file before reading
+        # Reset back to start of file before reading
         dest.seek(0)
         csvtest = csv.reader(codecs.iterdecode(dest, "utf-8"))
         row_count = 0
@@ -148,13 +148,13 @@ def import_csv(
     current_user: schemas.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    #Verify User
+    # Verify User
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
 
-    #Check that csv wasn't already imported and the csv was deleted
+    # Check that csv wasn't already imported and the csv was deleted
     if not os.path.exists(get_file_path(id)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="File already imported"
@@ -163,7 +163,7 @@ def import_csv(
     # Step 1: Get ProspectsFiles db entry, import is now async
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
 
-    #Verify Current User owns the requested file
+    # Verify Current User owns the requested file
     if current_user.id != file_entry.user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -185,7 +185,7 @@ def get_upload_status(
     current_user: schemas.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    #Verify User
+    # Verify User
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
@@ -194,7 +194,7 @@ def get_upload_status(
     # Check csv_metadata table to get completed status/progress, then return info
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
 
-    #Verify Current User owns the requested file
+    # Verify Current User owns the requested file
     if current_user.id != file_entry.user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

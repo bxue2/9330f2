@@ -152,6 +152,7 @@ def import_csv(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
 
+
     """Check that csv wasn't already imported and the csv was deleted"""
     if not os.path.exists(f"./csv_store/csv_{id}.csv"):
         raise HTTPException(
@@ -160,6 +161,12 @@ def import_csv(
 
     # Step 1: Get ProspectsFiles db entry, import is now async
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
+
+    """Verify Current User owns the requested file"""
+    if current_user.id != file_entry.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Current user does not own requested file"
+        )
 
     background_tasks.add_task(import_prospects, db, params, file_entry)
 

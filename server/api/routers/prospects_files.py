@@ -31,8 +31,6 @@ class CSVHeaders(BaseModel):
 
 # Helper/Background task for importing prospects in route 2
 def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles):
-    # Reset processed count for testing purposes
-    # ProspectsFilesCrud.update_prospects_file(db, file_entry, file_entry.total_rows, 0)
     with open(f"./csv_store/csv_{file_entry.id}.csv", "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, "utf-8"))
         # Skip first row if has_headers is true

@@ -38,10 +38,6 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
         # Skip first row if has_headers is true
         header_check = params.has_headers
         for row in csvtest:
-            # test code to make sure async is working
-            # time.sleep(8)
-            # print('next row')
-
             if header_check:
                 header_check = False
                 continue
@@ -100,7 +96,6 @@ async def upload_prospects_csv(
         )
 
     # Check that file is smaller than 200 MB
-    # Feel like this should be checked frontend as well
     file_content = await file.read()
     if len(file_content) > MAX_FILESIZE:
         raise HTTPException(
@@ -112,7 +107,7 @@ async def upload_prospects_csv(
     file_entry = ProspectsFilesCrud.create_prospects_file(db, current_user.id, 0, 0)
 
     # Going to add a local folder to store csv files, rename based on db id
-    # Using id for file name to prevent duplicates, timestamps could theoretically overlap?
+    # Using id for file name to prevent duplicates
     with open(f"./csv_store/csv_{file_entry.id}.csv", "wb") as dest:
         dest.write(file_content)
 
@@ -137,7 +132,6 @@ async def upload_prospects_csv(
                 detail="Max row count is 1,000,000",
             )
         # Updating number of rows in csv in db
-        # I don't think there's a way to get the row count without reading the whole file(?)
         ProspectsFilesCrud.update_prospects_file(db, file_entry, row_count, 0)
 
     return {"id": file_entry.id, "rows": sample_rows}
@@ -170,7 +164,6 @@ def import_csv(
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
 
     background_tasks.add_task(import_prospects, db, params, file_entry)
-    # import_prospects(db, params, file_entry)
 
     # Step 3: Return prospectsfile object
     return {"prospects_files": file_entry}

@@ -21,11 +21,13 @@ from api.models import ProspectsFiles
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
 
-def get_file_path(id):
+def get_file_path(id: int):
     return f"./csv_store/csv_{id}.csv"
 
 
-# Helper/Background task for importing prospects in route 2
+"""Helper/Background task for importing prospects in route 2"""
+
+
 def import_prospects(
     db: Session, params: schemas.CSVHeaders, file_entry: ProspectsFiles
 ):
@@ -76,7 +78,9 @@ def import_prospects(
     os.remove(get_file_path(file_entry.id))
 
 
-# Route 1
+"""Route 1: Uploading the csv file"""
+
+
 @router.post("/prospects_files", response_model=schemas.ProspectsFileUpload)
 async def upload_prospects_csv(
     current_user: schemas.User = Depends(get_current_user),
@@ -108,8 +112,6 @@ async def upload_prospects_csv(
 
     # Store first few rows of csv to return
     sample_rows = []
-    # Control how many rows to add to sample
-    return_row_count = SAMPLE_ROWCOUNT
 
     # Going to add a local folder to store csv files, rename based on db id
     # Then return sample data for column matching later if successful upload plus id of csv
@@ -120,7 +122,7 @@ async def upload_prospects_csv(
         csvtest = csv.reader(codecs.iterdecode(dest, "utf-8"))
         row_count = 0
         for row in csvtest:
-            if row_count < return_row_count:
+            if row_count < SAMPLE_ROWCOUNT:
                 sample_rows.append(row)
             row_count += 1
         if row_count > MAX_ROWCOUNT:
@@ -137,7 +139,9 @@ async def upload_prospects_csv(
     return {"id": file_entry.id, "rows": sample_rows}
 
 
-# Route 2
+"""Route 2: Getting CSV columns and starting the import"""
+
+
 @router.post(
     "/prospects_files/{id}/prospects", response_model=schemas.ProspectsFileImport
 )
@@ -176,7 +180,9 @@ def import_csv(
     return {"prospects_files": file_entry}
 
 
-# Route 3
+"""Route 3: Getting the current import progress of the csv"""
+
+
 @router.get(
     "/prospects_files/{id}/progress", response_model=schemas.ProspectsFileProgress
 )

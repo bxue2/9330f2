@@ -3,6 +3,7 @@ from sqlalchemy.orm.session import Session
 from api import schemas
 from api.models import Prospect
 from api.core.constants import DEFAULT_PAGE_SIZE, DEFAULT_PAGE, MIN_PAGE, MAX_PAGE_SIZE
+from sqlalchemy.sql.functions import func
 
 
 class ProspectCrud:
@@ -54,3 +55,22 @@ class ProspectCrud:
             .all()
         )
         return {row.id for row in res}
+
+    @classmethod
+    def get_prospect_by_email_user(cls, db: Session, user_id: int, email: str):
+        return (
+            db.query(Prospect)
+            .filter(Prospect.user_id == user_id, Prospect.email == email)
+            .first()
+        )
+
+    @classmethod
+    def update_prospect(
+        cls, db: Session, prospect: Prospect, first_name: str, last_name: str
+    ):
+        prospect.first_name = first_name
+        prospect.last_name = last_name
+        prospect.updated_at = func.now()
+        db.commit()
+        db.refresh(prospect)
+        return prospect

@@ -20,11 +20,15 @@ from api.models import ProspectsFiles
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
+
 def get_file_path(id):
     return f"./csv_store/csv_{id}.csv"
 
+
 # Helper/Background task for importing prospects in route 2
-def import_prospects(db: Session, params: schemas.CSVHeaders, file_entry: ProspectsFiles):
+def import_prospects(
+    db: Session, params: schemas.CSVHeaders, file_entry: ProspectsFiles
+):
     with open(get_file_path(file_entry.id), "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, "utf-8"))
         # Skip first row if has_headers is true
@@ -146,7 +150,6 @@ def import_csv(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
         )
 
-
     """Check that csv wasn't already imported and the csv was deleted"""
     if not os.path.exists(get_file_path(id)):
         raise HTTPException(
@@ -159,7 +162,8 @@ def import_csv(
     """Verify Current User owns the requested file"""
     if current_user.id != file_entry.user_id:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Current user does not own requested file"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Current user does not own requested file",
         )
 
     background_tasks.add_task(import_prospects, db, params, file_entry)

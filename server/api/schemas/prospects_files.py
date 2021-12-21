@@ -26,6 +26,7 @@ class ProspectsFileProgress(BaseModel):
     total: int
     processed: int
 
+
 # Request body for route 2
 class CSVHeaders(BaseModel):
     email_col: int

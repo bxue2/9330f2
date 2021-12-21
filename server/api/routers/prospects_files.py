@@ -190,4 +190,11 @@ def get_upload_status(
     # Check csv_metadata table to get completed status/progress, then return info
     file_entry = ProspectsFilesCrud.get_prospects_file_by_id(db, id)
 
+    #Verify Current User owns the requested file
+    if current_user.id != file_entry.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Current user does not own requested file",
+        )
+
     return {"total": file_entry.total_rows, "processed": file_entry.processed}

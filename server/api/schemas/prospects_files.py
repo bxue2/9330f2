@@ -25,3 +25,11 @@ class ProspectsFileImport(BaseModel):
 class ProspectsFileProgress(BaseModel):
     total: int
     processed: int
+
+# Request body for route 2
+class CSVHeaders(BaseModel):
+    email_col: int
+    first_name_col: int = None
+    last_name_col: int = None
+    force: bool = False
+    has_headers: bool = False

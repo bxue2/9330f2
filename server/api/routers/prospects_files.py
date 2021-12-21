@@ -20,19 +20,11 @@ from api.models import ProspectsFiles
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 
-# Request body for route 2
-class CSVHeaders(BaseModel):
-    email_col: int
-    first_name_col: int = None
-    last_name_col: int = None
-    force: bool = False
-    has_headers: bool = False
-
 def get_file_path(id):
     return f"./csv_store/csv_{id}.csv"
 
 # Helper/Background task for importing prospects in route 2
-def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles):
+def import_prospects(db: Session, params: schemas.CSVHeaders, file_entry: ProspectsFiles):
     with open(get_file_path(file_entry.id), "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, "utf-8"))
         # Skip first row if has_headers is true
@@ -144,7 +136,7 @@ async def upload_prospects_csv(
 def import_csv(
     background_tasks: BackgroundTasks,
     id: int,
-    params: CSVHeaders,
+    params: schemas.CSVHeaders,
     current_user: schemas.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

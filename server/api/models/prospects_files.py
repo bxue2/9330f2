@@ -16,4 +16,6 @@ class ProspectsFiles(Base):
     total_rows = Column(Integer, nullable=False)
     processed = Column(Integer, nullable=False)
 
-    user = relationship("User", back_populates="prospects_files", foreign_keys=[user_id])
+    user = relationship(
+        "User", back_populates="prospects_files", foreign_keys=[user_id]
+    )

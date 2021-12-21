@@ -5,6 +5,7 @@ from api.models import Prospect
 from api.core.constants import DEFAULT_PAGE_SIZE, DEFAULT_PAGE, MIN_PAGE, MAX_PAGE_SIZE
 from sqlalchemy.sql.functions import func
 
+
 class ProspectCrud:
     @classmethod
     def get_users_prospects(
@@ -56,10 +57,12 @@ class ProspectCrud:
         return {row.id for row in res}
 
     @classmethod
-    def get_prospect_by_email_user(
-        cls, db: Session, user_id: int, email: str
-    ):
-        return db.query(Prospect).filter(Prospect.user_id == user_id, Prospect.email == email).first()
+    def get_prospect_by_email_user(cls, db: Session, user_id: int, email: str):
+        return (
+            db.query(Prospect)
+            .filter(Prospect.user_id == user_id, Prospect.email == email)
+            .first()
+        )
 
     @classmethod
     def update_prospect(

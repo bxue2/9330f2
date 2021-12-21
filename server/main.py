@@ -22,6 +22,7 @@ app.include_router(campaigns.router)
 app.include_router(prospects.router)
 app.include_router(prospects_files.router)
 
+
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(_, exc):
     return JSONResponse({"error": exc.detail}, status_code=exc.status_code)

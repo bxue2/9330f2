@@ -28,10 +28,12 @@ class CSVHeaders(BaseModel):
     force: bool = False
     has_headers: bool = False
 
+def get_file_path(id):
+    return f"./csv_store/csv_{id}.csv"
 
 # Helper/Background task for importing prospects in route 2
 def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles):
-    with open(f"./csv_store/csv_{file_entry.id}.csv", "rb") as read:
+    with open(get_file_path(file_entry.id), "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, "utf-8"))
         # Skip first row if has_headers is true
         header_check = params.has_headers
@@ -71,7 +73,7 @@ def import_prospects(db: Session, params: CSVHeaders, file_entry: ProspectsFiles
                 ProspectsFilesCrud.increment_processed_count(db, file_entry)
 
     # cleanup after import finishes, delete local csv
-    os.remove(f"./csv_store/csv_{file_entry.id}.csv")
+    os.remove(get_file_path(file_entry.id))
 
 
 # Route 1
@@ -106,7 +108,7 @@ async def upload_prospects_csv(
 
     # Going to add a local folder to store csv files, rename based on db id
     # Using id for file name to prevent duplicates
-    with open(f"./csv_store/csv_{file_entry.id}.csv", "wb") as dest:
+    with open(get_file_path(file_entry.id), "wb") as dest:
         dest.write(file_content)
 
     # Step 2: Need to return sample data for column matching later if successful upload plus id of csv
@@ -114,7 +116,7 @@ async def upload_prospects_csv(
     sample_rows = []
     # control how many rows to add to sample
     return_row_count = 4
-    with open(f"./csv_store/csv_{file_entry.id}.csv", "rb") as read:
+    with open(get_file_path(file_entry.id), "rb") as read:
         csvtest = csv.reader(codecs.iterdecode(read, "utf-8"))
         row_count = 0
         for row in csvtest:
@@ -124,7 +126,7 @@ async def upload_prospects_csv(
         if row_count > MAX_ROWCOUNT:
             # cleanup first before throwing exception
             ProspectsFilesCrud.delete_prospects_file(db, file_entry.id)
-            os.remove(f"./csv_store/csv_{file_entry.id}.csv")
+            os.remove(get_file_path(file_entry.id))
             raise HTTPException(
                 status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                 detail="Max row count is 1,000,000",
@@ -154,7 +156,7 @@ def import_csv(
 
 
     """Check that csv wasn't already imported and the csv was deleted"""
-    if not os.path.exists(f"./csv_store/csv_{id}.csv"):
+    if not os.path.exists(get_file_path(id)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="File already imported"
         )

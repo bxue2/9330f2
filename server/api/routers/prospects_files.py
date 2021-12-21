@@ -39,6 +39,10 @@ def import_prospects(
                 continue
 
             email = row[params.email_col]
+            # Skip if mandatory email doesn't exist
+            if(email == None or email == ""):
+                continue
+
             first_name = ""
             if params.first_name_col != None:
                 first_name = row[params.first_name_col]
